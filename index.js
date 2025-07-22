@@ -1,7 +1,7 @@
 // index.js
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 import dotenv from 'dotenv';
-import commands from './cmds.js';
+import { commands } from './cmds.js';
 
 dotenv.config(); // loads .env
 
