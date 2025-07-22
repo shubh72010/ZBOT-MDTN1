@@ -1,23 +1,36 @@
-// index.js (backend entry point for Render)
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("login-form");
 
-const app = express();
-const port = process.env.PORT || 3000;
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-// Path fix for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, 'public')));
+    if (!username || !password) {
+      alert("Please fill in both fields.");
+      return;
+    }
 
-// Fallback to index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+    try {
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-app.listen(port, () => {
-  console.log(`✅ ZBOT-MDTN1 is running at http://localhost:${port}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        // Login success — redirect or show message
+        alert("Logged in successfully!");
+        window.location.href = "/dashboard"; // or wherever your dashboard is
+      } else {
+        alert(result.error || "Login failed.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Server error occurred.");
+    }
+  });
 });
