@@ -2,6 +2,22 @@ import express from 'express';
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 import { config } from 'dotenv';
 import cmds from './cmdsBKND.js';
+import { commands } from './cmds.js';
+
+// On interaction create:
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const command = commands.find(cmd => cmd.data.name === interaction.commandName);
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (err) {
+    console.error(err);
+    await interaction.reply({ content: 'There was an error executing that command.', ephemeral: true });
+  }
+});
 
 config();
 
