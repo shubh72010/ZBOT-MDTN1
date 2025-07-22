@@ -1,20 +1,17 @@
 {
-  "name": "zbøt-cen1",
+  "name": "zbot-mdtn1",
   "version": "1.0.0",
-  "description": "ZBØT CEN1 - A Discord bot with Firebase and backend API support.",
-  "main": "index.js",
   "type": "module",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": ["discord", "bot", "firebase", "express", "zbøts"],
-  "author": "Flakious",
-  "license": "MIT",
   "dependencies": {
-    "discord.js": "^14.13.0",
-    "dotenv": "^16.4.5",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
     "express": "^4.19.2",
     "firebase": "^10.12.0",
-    "node-fetch": "^3.4.1"
+    "node-fetch": "^3.3.2",      // <== FIXED VERSION
+    "crypto": "^1.0.1"
   }
 }
