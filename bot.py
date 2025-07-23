@@ -1,3 +1,6 @@
+import sys
+sys.modules["audioop"] = None  # 🔥 Prevents discord.py from crashing on Python 3.13
+
 import os
 import discord
 from discord.ext import commands
