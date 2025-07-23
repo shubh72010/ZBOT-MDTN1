@@ -1,24 +1,24 @@
 import os
 import discord
 from discord.ext import commands
-from cmds import setup_commands
+from cmds import setup_commands  # ✅ Fixed: importing the correct function
 
 intents = discord.Intents.default()
-client = commands.Bot(command_prefix="!", intents=intents)  # Prefix ignored, slash only
+bot = commands.Bot(command_prefix="!", intents=intents)  # prefix is ignored
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f"Logged in as {client.user} ({client.user.id})")
+    print(f"✅ Logged in as {bot.user} (ID: {bot.user.id})")
     try:
-        synced = await client.tree.sync()
-        print(f"Synced {len(synced)} slash commands globally.")
+        synced = await bot.tree.sync()
+        print(f"🌍 Synced {len(synced)} global slash commands.")
     except Exception as e:
-        print(f"Failed to sync commands: {e}")
+        print(f"⚠️ Failed to sync slash commands: {e}")
+    
+    await setup_commands(bot)
 
-    await setup_commands(client)
-
-# Read bot token from Render environment
+# Get token from environment (set this on Render)
 TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
-    raise RuntimeError("DISCORD_TOKEN not set in environment.")
-client.run(TOKEN)
+    raise RuntimeError("DISCORD_TOKEN is missing from environment.")
+bot.run(TOKEN)
