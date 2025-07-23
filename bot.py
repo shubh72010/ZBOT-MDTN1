@@ -1,26 +1,29 @@
 import os
 from dotenv import load_dotenv
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
+# Load the .env file
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-intents = nextcord.Intents.default()
+# Set up bot with message content intent
+intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# On bot ready
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    print(f"✅ Logged in as {bot.user.name} ({bot.user.id})")
 
+# Basic command: !ping
 @bot.command()
 async def ping(ctx):
-    await ctx.send("Pong!")
+    await ctx.send("🏓 Pong!")
 
-@bot.command()
-async def echo(ctx, *, msg):
-    await ctx.send(msg)
+# Add more commands below here
 
+# Run the bot
 bot.run(TOKEN)
