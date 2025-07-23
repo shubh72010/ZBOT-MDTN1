@@ -1,42 +1,34 @@
-import os
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
-from cmds import setup_commands
+from cmds import register_commands
+import os
 from flask import Flask
 import threading
 
-# Load token from environment
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
-
+# Bot Setup
 intents = discord.Intents.default()
 intents.message_content = True
-intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Load slash & normal commands
+# Load Commands
 @bot.event
 async def on_ready():
-    print(f"Bot is online as {bot.user}")
-    await setup_commands(bot)
+    print(f"[+] Logged in as {bot.user}")
+    await register_commands(bot)
 
-# Web server (keeps bot alive on Render)
-app = Flask("")
+# Flask Web Server (for Render uptime)
+app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "ZBØT-MDTN1 running."
+    return "Bot is alive!", 200
 
-def run():
-    app.run(host="0.0.0.0", port=8080)
+def run_flask():
+    app.run(host="0.0.0.0", port=10000)
 
-# Keep-alive thread
-threading.Thread(target=run).start()
+# Run Flask in background
+threading.Thread(target=run_flask).start()
 
-# Start bot
-if TOKEN:
-    bot.run(TOKEN)
-else:
-    print("Missing DISCORD_BOT_TOKEN in environment variables.")
+# Run Discord Bot
+bot.run(os.getenv("DISCORD_TOKEN"))
