@@ -1,44 +1,34 @@
-from discord import app_commands, Interaction
-import discord
-import random
-import datetime
+from discord import app_commands
 
-async def setup_commands(bot):
-    @bot.tree.command(name="ping", description="Ping the bot")
-    async def ping(interaction: Interaction):
-        await interaction.response.send_message(f"Pong! `{round(bot.latency * 1000)}ms`")
+def register_commands(bot):
+    @bot.tree.command(name="ping", description="Check if bot is alive")
+    async def ping(interaction):
+        await interaction.response.send_message("🏓 Pong!", ephemeral=True)
 
-    @bot.tree.command(name="roll", description="Roll a dice")
-    async def roll(interaction: Interaction):
-        value = random.randint(1, 6)
-        await interaction.response.send_message(f"🎲 You rolled a `{value}`")
-
-    @bot.tree.command(name="userinfo", description="See your user info")
-    async def userinfo(interaction: Interaction):
+    @bot.tree.command(name="userinfo", description="Get user info")
+    async def userinfo(interaction):
         user = interaction.user
-        await interaction.response.send_message(f"👤 Username: `{user}`\n🆔 ID: `{user.id}`")
+        await interaction.response.send_message(f"User: {user.name}\nID: {user.id}")
+
+    @bot.tree.command(name="serverinfo", description="Get server info")
+    async def serverinfo(interaction):
+        guild = interaction.guild
+        await interaction.response.send_message(f"Server: {guild.name}\nMembers: {guild.member_count}")
 
     @bot.tree.command(name="say", description="Make the bot say something")
-    @app_commands.describe(text="What should I say?")
-    async def say(interaction: Interaction, text: str):
+    @app_commands.describe(text="Text for bot to say")
+    async def say(interaction, text: str):
         await interaction.response.send_message(text)
 
-    @bot.tree.command(name="time", description="Show the current time")
-    async def time(interaction: Interaction):
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        await interaction.response.send_message(f"🕒 Server time: `{now}`")
+    @bot.tree.command(name="avatar", description="Get your profile picture")
+    async def avatar(interaction):
+        await interaction.response.send_message(interaction.user.avatar.url)
 
-    @bot.tree.command(name="coinflip", description="Flip a coin")
-    async def coinflip(interaction: Interaction):
-        result = random.choice(["Heads", "Tails"])
-        await interaction.response.send_message(f"🪙 It's **{result}**!")
+    @bot.tree.command(name="hello", description="Say hello")
+    async def hello(interaction):
+        await interaction.response.send_message(f"Hey {interaction.user.name}! 👋")
 
-    @bot.tree.command(name="choose", description="Choose randomly from a list")
-    @app_commands.describe(options="Separate options with commas")
-    async def choose(interaction: Interaction, options: str):
-        choices = [opt.strip() for opt in options.split(",") if opt.strip()]
-        if not choices:
-            await interaction.response.send_message("❌ You need to give me at least one valid option.")
-        else:
-            result = random.choice(choices)
-            await interaction.response.send_message(f"I pick: **{result}**")
+    # Add more commands as needed — same pattern
+
+    # If needed, you can add per-server (guild) syncs:
+    # await bot.tree.sync(guild=discord.Object(id=YOUR_TEST_SERVER_ID))
