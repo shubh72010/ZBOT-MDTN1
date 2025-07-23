@@ -1,29 +1,42 @@
 import os
-from dotenv import load_dotenv
 import discord
 from discord.ext import commands
+from dotenv import load_dotenv
+from cmds import setup_commands
+from flask import Flask
+import threading
 
-# Load the .env file
+# Load token from environment
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
-# Set up bot with message content intent
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# On bot ready
+# Load slash & normal commands
 @bot.event
 async def on_ready():
-    print(f"✅ Logged in as {bot.user.name} ({bot.user.id})")
+    print(f"Bot is online as {bot.user}")
+    await setup_commands(bot)
 
-# Basic command: !ping
-@bot.command()
-async def ping(ctx):
-    await ctx.send("🏓 Pong!")
+# Web server (keeps bot alive on Render)
+app = Flask("")
 
-# Add more commands below here
+@app.route("/")
+def home():
+    return "ZBØT-MDTN1 running."
 
-# Run the bot
-bot.run(TOKEN)
+def run():
+    app.run(host="0.0.0.0", port=8080)
+
+# Keep-alive thread
+threading.Thread(target=run).start()
+
+# Start bot
+if TOKEN:
+    bot.run(TOKEN)
+else:
+    print("Missing DISCORD_BOT_TOKEN in environment variables.")
