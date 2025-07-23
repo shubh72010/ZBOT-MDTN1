@@ -1,27 +1,24 @@
 import os
 import discord
 from discord.ext import commands
-from discord import app_commands
-from dotenv import load_dotenv
-from cmds import SlashCmds  # Import your commands
+from cmds import setup_commands
 
-load_dotenv()
-
-TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
-tree = bot.tree  # Slash command tree
+client = commands.Bot(command_prefix="!", intents=intents)  # Prefix ignored, slash only
 
-@bot.event
+@client.event
 async def on_ready():
-    print(f"✅ Logged in as {bot.user}")
+    print(f"Logged in as {client.user} ({client.user.id})")
     try:
-        await tree.sync()
-        print("✅ Slash commands synced globally")
+        synced = await client.tree.sync()
+        print(f"Synced {len(synced)} slash commands globally.")
     except Exception as e:
-        print(f"❌ Slash command sync failed: {e}")
+        print(f"Failed to sync commands: {e}")
 
-# Register all commands
-SlashCmds(tree)
+    await setup_commands(client)
 
-bot.run(TOKEN)
+# Read bot token from Render environment
+TOKEN = os.getenv("DISCORD_TOKEN")
+if not TOKEN:
+    raise RuntimeError("DISCORD_TOKEN not set in environment.")
+client.run(TOKEN)
