@@ -1,34 +1,27 @@
+import os
 import discord
 from discord.ext import commands
-from cmds import register_commands
-import os
-from flask import Flask
-import threading
+from discord import app_commands
+from dotenv import load_dotenv
+from cmds import SlashCmds  # Import your commands
 
-# Bot Setup
+load_dotenv()
+
+TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
-intents.message_content = True
-
 bot = commands.Bot(command_prefix="!", intents=intents)
+tree = bot.tree  # Slash command tree
 
-# Load Commands
 @bot.event
 async def on_ready():
-    print(f"[+] Logged in as {bot.user}")
-    await register_commands(bot)
+    print(f"✅ Logged in as {bot.user}")
+    try:
+        await tree.sync()
+        print("✅ Slash commands synced globally")
+    except Exception as e:
+        print(f"❌ Slash command sync failed: {e}")
 
-# Flask Web Server (for Render uptime)
-app = Flask(__name__)
+# Register all commands
+SlashCmds(tree)
 
-@app.route("/")
-def home():
-    return "Bot is alive!", 200
-
-def run_flask():
-    app.run(host="0.0.0.0", port=10000)
-
-# Run Flask in background
-threading.Thread(target=run_flask).start()
-
-# Run Discord Bot
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run(TOKEN)
